@@ -26,7 +26,7 @@ export const NETWORK_CONFIG = {
   },
   [BNB_TESTNET_CHAIN_ID]: {
     chainId: ethers.utils.hexValue(BNB_TESTNET_CHAIN_ID),
-    chainName: 'Binance Smart Chain Testnet',
+    chainName: 'BSC Testnet',
     nativeCurrency: {
       name: 'tBNB',
       symbol: 'tBNB',
