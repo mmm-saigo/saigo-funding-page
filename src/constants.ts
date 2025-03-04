@@ -62,8 +62,6 @@ export const TOKENS: Record<string, TokenInfo> = {
   }
 };
 
-export const EXCHANGE_RATE = 14285.7; // 1 BNB = 14285.7 SAIGO
-
 // Fundraising constants
-export const FUNDRAISING_GOAL = 7000; // Goal in BNB
-export const FUNDRAISING_CURRENT = 0; // Current amount raised in BNB
+// export const FUNDRAISING_GOAL = 7000; // Goal in BNB
+// export const FUNDRAISING_CURRENT = 0; // Current amount raised in BNB
