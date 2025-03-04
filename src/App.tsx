@@ -69,7 +69,10 @@ function App() {
         <div className="flex flex-col items-center mt-0 mb-auto pt-10">
           <ExchangeCard walletState={walletState} />
           
-          <FundraisingProgress className="mt-4" />
+          <FundraisingProgress 
+            className="mt-4" 
+            provider={walletState.provider} 
+          />
           
           <div className="mt-6 text-center text-gray-700 max-w-md px-4">
             <h3 className="text-lg font-semibold mb-2">About  the SAIGO</h3>
