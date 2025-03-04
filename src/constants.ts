@@ -36,10 +36,16 @@ export const NETWORK_CONFIG = {
 
 export const SAIGO_CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890"; // Replace with actual contract address
 
+// 获取当前网络的原生代币符号
+export const getCurrentNetworkCurrency = () => {
+  return NETWORK_CONFIG[CURRENT_NETWORK_ID].nativeCurrency.symbol;
+};
+
+// 更新 TOKENS 对象以使用当前网络的原生代币符号
 export const TOKENS: Record<string, TokenInfo> = {
   BNB: {
-    symbol: "BNB",
-    name: "BNB",
+    symbol: getCurrentNetworkCurrency(),
+    name: getCurrentNetworkCurrency(),
     decimals: 18,
     logoUrl: "https://cryptologos.cc/logos/bnb-bnb-logo.png",
   },

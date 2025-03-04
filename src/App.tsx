@@ -6,7 +6,7 @@ import WalletButton from './components/WalletButton';
 import ExchangeCard from './components/ExchangeCard';
 import FundraisingProgress from './components/FundraisingProgress';
 import { useWallet } from './hooks/useWallet';
-import { CURRENT_NETWORK_ID, BNB_CHAIN_ID, BNB_TESTNET_CHAIN_ID } from './constants';
+import { CURRENT_NETWORK_ID, BNB_CHAIN_ID, BNB_TESTNET_CHAIN_ID, getCurrentNetworkCurrency } from './constants';
 
 declare global {
   interface Window {
@@ -30,6 +30,9 @@ function App() {
       ? "Binance Smart Chain" 
       : "Binance Smart Chain Testnet";
   };
+  
+  // 获取当前网络的原生代币符号
+  const nativeCurrency = getCurrentNetworkCurrency();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 flex flex-col">
@@ -76,12 +79,12 @@ function App() {
             <div className="bg-white rounded-lg p-4 shadow-sm text-left">
               <ul className="list-disc pl-5 space-y-2 text-sm">
                 <li>The fundraising will start at 16:00 on March 3, 2025, Coordinated Universal Time (UTC+0). The fundraising period will last for a maximum of 72 hours.</li>
-                <li>Minimum contribution: <span className="font-medium">0.0001 BNB</span></li>
-                <li>Maximum contribution per wallet: <span className="font-medium">100 BNB</span></li>
-                <li>The lower limit for successful fundraising is <span className="font-medium">5,500 BNB</span>, and the upper limit for successful fundraising is <span className="font-medium">7,000 BNB</span>. If the fundraising fails, all the BNB will be refunded. If the fundraising amount exceeds 7,000 BNB, the UI exchange function will be shut down, and the BNB that exceeds the amount and is transferred to the contract address will be refunded.</li>
+                <li>Minimum contribution: <span className="font-medium">0.0001 {nativeCurrency}</span></li>
+                <li>Maximum contribution per wallet: <span className="font-medium">100 {nativeCurrency}</span></li>
+                <li>The lower limit for successful fundraising is <span className="font-medium">5,500 {nativeCurrency}</span>, and the upper limit for successful fundraising is <span className="font-medium">7,000 {nativeCurrency}</span>. If the fundraising fails, all the {nativeCurrency} will be refunded. If the fundraising amount exceeds 7,000 {nativeCurrency}, the UI exchange function will be shut down, and the {nativeCurrency} that exceeds the amount and is transferred to the contract address will be refunded.</li>
                 <li>Tokens will be distributed in real time to the addresses that interact with the contract.</li>
                 <li>This fundraising corresponds to 10% of the total circulating supply of SAIGO. The funds raised will be used for the project's development, covering the expansion and maintenance of the technical team, as well as early - stage marketing and project promotion.</li>
-                <li>Users who participate in the exchange with an amount of 0.000303 BNB for the first time will share 1% of the fundraising incentives after the fundraising is successful.</li>
+                <li>Users who participate in the exchange with an amount of 0.000303 {nativeCurrency} for the first time will share 1% of the fundraising incentives after the fundraising is successful.</li>
                 <li>If KOLs and media initiate discussions or share relevant content, they will share 1% of the fundraising incentives based on the popularity of the discussions after the fundraising is successful. <a href="https://docs.google.com/forms/d/e/1FAIpQLSfj0uTSY2mx6JPEpfyE3uKa8ONGbDLYBAiD5MajbIWUeKzPyw/viewform?entry.2005620554=Your+name+on+the+social+platform.&entry.1045781291=xxxxxxxx@xx.com&entry.1065046570=0x*****************************" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">KOL submission entry</a></li>
                 <li>Users from regions where the project is restricted by policies and regulations are not allowed to participate.</li>
                 <li>By participating, you agree to the <span className="text-blue-600 cursor-pointer">Terms and Conditions</span></li>
@@ -105,7 +108,7 @@ Tokens unlocked by the team will be released to the team's multi - signature add
               </div>
             </div>
             
-            <p className="text-sm text-gray-500 mt-4">Make sure you're connected to the Binance Smart Chain network to complete your exchange.</p>
+            <p className="text-sm text-gray-500 mt-4">Make sure you're connected to the {getNetworkName()} network to complete your exchange.</p>
           </div>
         </div>
       </main>

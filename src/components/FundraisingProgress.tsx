@@ -1,5 +1,5 @@
 import React from 'react';
-import { FUNDRAISING_GOAL, FUNDRAISING_CURRENT } from '../constants';
+import { FUNDRAISING_GOAL, FUNDRAISING_CURRENT, getCurrentNetworkCurrency } from '../constants';
 
 interface FundraisingProgressProps {
   className?: string;
@@ -9,6 +9,9 @@ const FundraisingProgress: React.FC<FundraisingProgressProps> = ({ className = '
   const progressPercentage = Math.min((FUNDRAISING_CURRENT / FUNDRAISING_GOAL) * 100, 100);
   const formattedCurrent = FUNDRAISING_CURRENT.toLocaleString();
   const formattedGoal = FUNDRAISING_GOAL.toLocaleString();
+  
+  // 获取当前网络的原生代币符号
+  const nativeCurrency = getCurrentNetworkCurrency();
   
   return (
     <div className={`bg-white rounded-xl shadow-md p-4 w-full max-w-md ${className}`}>
@@ -28,10 +31,10 @@ const FundraisingProgress: React.FC<FundraisingProgressProps> = ({ className = '
       
       <div className="flex justify-between text-sm">
         <span className="text-gray-600">
-          <span className="font-semibold text-blue-700">{formattedCurrent} BNB</span> raised
+          <span className="font-semibold text-blue-700">{formattedCurrent} {nativeCurrency}</span> raised
         </span>
         <span className="text-gray-600">
-          Goal: <span className="font-semibold">{formattedGoal} BNB</span>
+          Goal: <span className="font-semibold">{formattedGoal} {nativeCurrency}</span>
         </span>
       </div>
       

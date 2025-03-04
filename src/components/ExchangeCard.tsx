@@ -4,7 +4,7 @@ import { ArrowDown, RefreshCw } from 'lucide-react';
 import { toast } from 'react-toastify';
 import TokenInput from './TokenInput';
 import { TokenInfo, WalletState } from '../types';
-import { EXCHANGE_RATE, TOKENS } from '../constants';
+import { EXCHANGE_RATE, TOKENS, getCurrentNetworkCurrency } from '../constants';
 import { useTokenBalance } from '../hooks/useTokenBalance';
 
 // Simple ERC20 ABI for token transfers
@@ -104,9 +104,12 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
     }
   };
 
+  // 获取当前网络的原生代币符号
+  const nativeCurrency = getCurrentNetworkCurrency();
+
   return (
     <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-5 rounded-2xl shadow-lg max-w-md w-full">
-      <h2 className="text-xl font-bold text-center mb-4 text-gray-800">Token Exchange</h2>
+      <h2 className="text-xl font-bold text-center mb-4 text-gray-800">Exchange {nativeCurrency} for SAIGO</h2>
       
       <TokenInput
         token={fromToken}
@@ -130,7 +133,7 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
       />
       
       <div className="text-center text-sm text-gray-500 my-2">
-        Exchange Rate: 1 BNB = {EXCHANGE_RATE} SAIGO
+        Exchange Rate: 1 {nativeCurrency} = {EXCHANGE_RATE.toLocaleString()} SAIGO
       </div>
       
       <button
@@ -152,7 +155,7 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
         ) : !fromAmount ? (
           "Enter an amount"
         ) : (
-          "Swap BNB for SAIGO"
+          `Swap ${nativeCurrency} for SAIGO`
         )}
       </button>
     </div>
