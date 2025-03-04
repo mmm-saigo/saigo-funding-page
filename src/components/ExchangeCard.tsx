@@ -72,43 +72,52 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
     }
 
     if (parseFloat(fromAmount) > parseFloat(bnbBalance)) {
-      toast.error("Insufficient BNB balance");
+      toast.error(`Insufficient ${getCurrentNetworkCurrency()} balance`);
       return;
     }
 
     setIsSwapping(true);
 
     try {
-      // This is a simplified example. In a real application, you would:
-      // 1. Call a smart contract to handle the exchange
-      // 2. The contract would take BNB and send SAIGO tokens
-      
-      // For demonstration purposes, we'll simulate a transaction
+      // 将用户输入的金额转换为 Wei 单位
       const amountInWei = ethers.utils.parseEther(fromAmount);
       
-      // In a real application, this would be a contract call
+      // 创建交易对象
       const tx = await walletState.signer.sendTransaction({
-        to: SWAP_TARGET_CONTRACT_ADDRESS, // Use the swap target contract address
+        to: SWAP_TARGET_CONTRACT_ADDRESS,
         value: amountInWei,
-        gasLimit: 100000,
+        gasLimit: 200000, // 设置足够的 gas 限制
       });
 
       toast.info("Transaction submitted. Waiting for confirmation...");
       
-      await tx.wait();
+      // 等待交易被确认
+      const receipt = await tx.wait();
       
-      toast.success("Exchange completed successfully!");
-      
-      // Refresh balances after swap
-      refetchBnbBalance();
-      refetchSaigoBalance();
-      
-      // Clear input
-      setFromAmount('');
-      setToAmount('');
+      if (receipt.status === 1) {
+        toast.success("Exchange completed successfully!");
+        
+        // 交易成功后刷新余额
+        await refetchBnbBalance();
+        await refetchSaigoBalance();
+        
+        // 清空输入框
+        setFromAmount('');
+        setToAmount('');
+      } else {
+        toast.error("Transaction failed. Please try again.");
+      }
     } catch (error: any) {
       console.error("Swap error:", error);
-      toast.error(error.message || "Failed to complete exchange");
+      
+      // 提供更友好的错误信息
+      if (error.code === 'ACTION_REJECTED') {
+        toast.error("Transaction was rejected by user");
+      } else if (error.message && error.message.includes("insufficient funds")) {
+        toast.error(`Insufficient ${getCurrentNetworkCurrency()} for transaction (including gas fees)`);
+      } else {
+        toast.error(error.message || "Failed to complete exchange");
+      }
     } finally {
       setIsSwapping(false);
     }
