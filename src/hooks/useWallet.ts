@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { WalletState } from '../types';
-import { BNB_CHAIN_ID, BNB_TESTNET_CHAIN_ID } from '../constants';
+import { BNB_CHAIN_ID, BNB_TESTNET_CHAIN_ID, CURRENT_NETWORK_ID, NETWORK_CONFIG } from '../constants';
 
 const initialState: WalletState = {
   connected: false,
@@ -35,32 +35,21 @@ export function useWallet() {
       // Get the connected chain ID
       const { chainId } = await provider.getNetwork();
       
-      // Check if we're on BSC
-      if (chainId !== BNB_CHAIN_ID && chainId !== BNB_TESTNET_CHAIN_ID) {
+      // Check if we're on the configured network
+      if (chainId !== CURRENT_NETWORK_ID) {
         try {
-          // Try to switch to BSC
+          // Try to switch to the configured network
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: ethers.utils.hexValue(BNB_CHAIN_ID) }],
+            params: [{ chainId: ethers.utils.hexValue(CURRENT_NETWORK_ID) }],
           });
         } catch (switchError: any) {
           // This error code indicates that the chain has not been added to MetaMask
           if (switchError.code === 4902) {
+            // Add the network to MetaMask
             await window.ethereum.request({
               method: 'wallet_addEthereumChain',
-              params: [
-                {
-                  chainId: ethers.utils.hexValue(BNB_CHAIN_ID),
-                  chainName: 'Binance Smart Chain',
-                  nativeCurrency: {
-                    name: 'BNB',
-                    symbol: 'BNB',
-                    decimals: 18,
-                  },
-                  rpcUrls: ['https://bsc-dataseed.binance.org/'],
-                  blockExplorerUrls: ['https://bscscan.com/'],
-                },
-              ],
+              params: [NETWORK_CONFIG[CURRENT_NETWORK_ID]],
             });
           } else {
             throw switchError;

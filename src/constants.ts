@@ -1,7 +1,38 @@
 import { TokenInfo } from './types';
+import { ethers } from 'ethers';
 
 export const BNB_CHAIN_ID = 56;
 export const BNB_TESTNET_CHAIN_ID = 97;
+
+// 配置当前使用的网络 - 设置为主网或测试网
+// 将此变量设置为 BNB_CHAIN_ID 使用主网，或设置为 BNB_TESTNET_CHAIN_ID 使用测试网
+export const CURRENT_NETWORK_ID = BNB_TESTNET_CHAIN_ID; // 或 BNB_TESTNET_CHAIN_ID
+
+// 网络配置
+export const NETWORK_CONFIG = {
+  [BNB_CHAIN_ID]: {
+    chainId: ethers.utils.hexValue(BNB_CHAIN_ID),
+    chainName: 'Binance Smart Chain',
+    nativeCurrency: {
+      name: 'BNB',
+      symbol: 'BNB',
+      decimals: 18,
+    },
+    rpcUrls: ['https://bsc-dataseed.binance.org/'],
+    blockExplorerUrls: ['https://bscscan.com/'],
+  },
+  [BNB_TESTNET_CHAIN_ID]: {
+    chainId: ethers.utils.hexValue(BNB_TESTNET_CHAIN_ID),
+    chainName: 'Binance Smart Chain Testnet',
+    nativeCurrency: {
+      name: 'tBNB',
+      symbol: 'tBNB',
+      decimals: 18,
+    },
+    rpcUrls: ['https://data-seed-prebsc-1-s1.binance.org:8545/'],
+    blockExplorerUrls: ['https://testnet.bscscan.com/'],
+  },
+};
 
 export const SAIGO_CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890"; // Replace with actual contract address
 

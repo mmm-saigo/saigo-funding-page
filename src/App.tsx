@@ -6,6 +6,7 @@ import WalletButton from './components/WalletButton';
 import ExchangeCard from './components/ExchangeCard';
 import FundraisingProgress from './components/FundraisingProgress';
 import { useWallet } from './hooks/useWallet';
+import { CURRENT_NETWORK_ID, BNB_CHAIN_ID, BNB_TESTNET_CHAIN_ID } from './constants';
 
 declare global {
   interface Window {
@@ -23,6 +24,13 @@ function App() {
     disconnectWallet,
   } = useWallet();
 
+  // 获取当前网络名称
+  const getNetworkName = () => {
+    return CURRENT_NETWORK_ID === BNB_CHAIN_ID 
+      ? "Binance Smart Chain" 
+      : "Binance Smart Chain Testnet";
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-purple-100 flex flex-col">
       {/* Header */}
@@ -31,13 +39,18 @@ function App() {
           <Coins size={32} className="text-blue-600 mr-2" />
           <h1 className="text-2xl font-bold text-blue-800">SAIGO</h1>
         </div>
-        <WalletButton
-          connected={connected}
-          address={address}
-          isLoading={isLoading}
-          onConnect={connectWallet}
-          onDisconnect={disconnectWallet}
-        />
+        <div className="flex items-center">
+          <span className="text-sm text-gray-600 mr-4">
+            Network: {getNetworkName()}
+          </span>
+          <WalletButton
+            connected={connected}
+            address={address}
+            isLoading={isLoading}
+            onConnect={connectWallet}
+            onDisconnect={disconnectWallet}
+          />
+        </div>
       </header>
 
       {/* Main Content */}
