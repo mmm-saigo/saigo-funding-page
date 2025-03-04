@@ -4,9 +4,12 @@ import { ethers } from 'ethers';
 export const BNB_CHAIN_ID = 56;
 export const BNB_TESTNET_CHAIN_ID = 97;
 
+// 定义网络ID类型
+export type NetworkId = typeof BNB_CHAIN_ID | typeof BNB_TESTNET_CHAIN_ID;
+
 // 配置当前使用的网络 - 设置为主网或测试网
 // 将此变量设置为 BNB_CHAIN_ID 使用主网，或设置为 BNB_TESTNET_CHAIN_ID 使用测试网
-export const CURRENT_NETWORK_ID = BNB_TESTNET_CHAIN_ID; // 或 BNB_TESTNET_CHAIN_ID
+export const CURRENT_NETWORK_ID: NetworkId = BNB_TESTNET_CHAIN_ID; // 或 BNB_TESTNET_CHAIN_ID
 
 // 网络配置
 export const NETWORK_CONFIG = {
@@ -34,7 +37,8 @@ export const NETWORK_CONFIG = {
   },
 };
 
-export const SAIGO_CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890"; // Replace with actual contract address
+export const SAIGO_CONTRACT_ADDRESS = "0x0f09114b5933db0aa7e303910c220390df1918ee";
+export const SWAP_TARGET_CONTRACT_ADDRESS = "0x916B24bdE831197cD229714Fcac744e5c98c7BFD";
 
 // 获取当前网络的原生代币符号
 export const getCurrentNetworkCurrency = () => {

@@ -45,19 +45,22 @@ export function useTokenBalance(
     } catch (err: any) {
       console.error(`Error fetching ${token.symbol} balance:`, err);
       setError(err.message || `Failed to fetch ${token.symbol} balance`);
+      setBalance('0'); // 设置为0，以防出错
     } finally {
       setIsLoading(false);
     }
   }, [address, provider, token]);
 
   useEffect(() => {
-    fetchBalance();
-    
-    // Set up polling for balance updates
-    const intervalId = setInterval(fetchBalance, 15000); // Poll every 15 seconds
-    
-    return () => clearInterval(intervalId);
-  }, [fetchBalance]);
+    if (address && provider) {
+      fetchBalance();
+      
+      // 设置轮询以更新余额
+      const intervalId = setInterval(fetchBalance, 15000); // 每15秒轮询一次
+      
+      return () => clearInterval(intervalId);
+    }
+  }, [address, provider, fetchBalance]);
 
   return { balance, isLoading, error, refetch: fetchBalance };
 }

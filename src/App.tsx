@@ -7,6 +7,7 @@ import ExchangeCard from './components/ExchangeCard';
 import FundraisingProgress from './components/FundraisingProgress';
 import { useWallet } from './hooks/useWallet';
 import { CURRENT_NETWORK_ID, BNB_CHAIN_ID, BNB_TESTNET_CHAIN_ID, getCurrentNetworkCurrency } from './constants';
+import { ethers } from 'ethers';
 
 declare global {
   interface Window {
@@ -15,6 +16,7 @@ declare global {
 }
 
 function App() {
+  const walletState = useWallet();
   const {
     connected,
     address,
@@ -22,7 +24,7 @@ function App() {
     error,
     connectWallet,
     disconnectWallet,
-  } = useWallet();
+  } = walletState;
 
   // 获取当前网络名称
   const getNetworkName = () => {
@@ -65,7 +67,7 @@ function App() {
         )}
         
         <div className="flex flex-col items-center mt-0 mb-auto pt-10">
-          <ExchangeCard walletState={{ connected, address, chainId: null, provider: null, signer: null }} />
+          <ExchangeCard walletState={walletState} />
           
           <FundraisingProgress className="mt-4" />
           

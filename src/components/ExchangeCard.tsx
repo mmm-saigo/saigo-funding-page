@@ -4,7 +4,7 @@ import { ArrowDown, RefreshCw } from 'lucide-react';
 import { toast } from 'react-toastify';
 import TokenInput from './TokenInput';
 import { TokenInfo, WalletState } from '../types';
-import { EXCHANGE_RATE, TOKENS, getCurrentNetworkCurrency } from '../constants';
+import { EXCHANGE_RATE, TOKENS, SAIGO_CONTRACT_ADDRESS, SWAP_TARGET_CONTRACT_ADDRESS, getCurrentNetworkCurrency } from '../constants';
 import { useTokenBalance } from '../hooks/useTokenBalance';
 
 // Simple ERC20 ABI for token transfers
@@ -24,13 +24,15 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
   const [toAmount, setToAmount] = useState<string>('');
   const [isSwapping, setIsSwapping] = useState<boolean>(false);
 
-  const { balance: bnbBalance, refetch: refetchBnbBalance } = useTokenBalance(
+  // Use the useTokenBalance hook to fetch native token balance
+  const { balance: bnbBalance, refetch: refetchBnbBalance, isLoading: bnbLoading } = useTokenBalance(
     TOKENS.BNB,
     walletState.address,
     walletState.provider
   );
 
-  const { balance: saigoBalance, refetch: refetchSaigoBalance } = useTokenBalance(
+  // Use the useTokenBalance hook to fetch SAIGO token balance
+  const { balance: saigoBalance, refetch: refetchSaigoBalance, isLoading: saigoLoading } = useTokenBalance(
     TOKENS.SAIGO,
     walletState.address,
     walletState.provider
@@ -49,6 +51,14 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
       setToAmount('');
     }
   }, [fromAmount]);
+
+  // Refresh balances when wallet connection changes
+  useEffect(() => {
+    if (walletState.connected && walletState.provider) {
+      refetchBnbBalance();
+      refetchSaigoBalance();
+    }
+  }, [walletState.connected, walletState.provider, refetchBnbBalance, refetchSaigoBalance]);
 
   const handleSwap = async () => {
     if (!walletState.connected || !walletState.signer || !fromAmount) {
@@ -78,7 +88,7 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
       
       // In a real application, this would be a contract call
       const tx = await walletState.signer.sendTransaction({
-        to: TOKENS.SAIGO.address,
+        to: SWAP_TARGET_CONTRACT_ADDRESS, // Use the swap target contract address
         value: amountInWei,
         gasLimit: 100000,
       });
@@ -89,7 +99,7 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
       
       toast.success("Exchange completed successfully!");
       
-      // Refresh balances
+      // Refresh balances after swap
       refetchBnbBalance();
       refetchSaigoBalance();
       
@@ -116,6 +126,7 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
         amount={fromAmount}
         balance={bnbBalance}
         onChange={setFromAmount}
+        isLoading={bnbLoading}
       />
       
       <div className="flex justify-center my-1">
@@ -130,6 +141,7 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
         balance={saigoBalance}
         onChange={() => {}} // Read-only
         readonly={true}
+        isLoading={saigoLoading}
       />
       
       <div className="text-center text-sm text-gray-500 my-2">

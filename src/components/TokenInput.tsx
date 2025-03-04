@@ -1,5 +1,6 @@
 import React from 'react';
 import { TokenInfo } from '../types';
+import { RefreshCw } from 'lucide-react';
 
 interface TokenInputProps {
   token: TokenInfo;
@@ -7,6 +8,7 @@ interface TokenInputProps {
   balance?: string;
   onChange: (value: string) => void;
   readonly?: boolean;
+  isLoading?: boolean;
 }
 
 const TokenInput: React.FC<TokenInputProps> = ({
@@ -15,6 +17,7 @@ const TokenInput: React.FC<TokenInputProps> = ({
   balance,
   onChange,
   readonly = false,
+  isLoading = false,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -41,19 +44,26 @@ const TokenInput: React.FC<TokenInputProps> = ({
           />
           <span className="font-semibold">{token.symbol}</span>
         </div>
-        {balance && (
-          <div className="text-xs text-gray-500">
-            Balance: {parseFloat(balance).toFixed(6)}
-            {!readonly && (
-              <button 
-                onClick={handleMaxClick}
-                className="ml-1 text-blue-500 text-xs font-semibold"
-              >
-                MAX
-              </button>
-            )}
-          </div>
-        )}
+        <div className="text-xs text-gray-500">
+          {isLoading ? (
+            <div className="flex items-center">
+              <RefreshCw size={12} className="animate-spin mr-1" />
+              <span>Loading...</span>
+            </div>
+          ) : (
+            <>
+              Balance: {balance ? parseFloat(balance).toFixed(6) : '0.000000'}
+              {!readonly && balance && (
+                <button 
+                  onClick={handleMaxClick}
+                  className="ml-1 text-blue-500 text-xs font-semibold"
+                >
+                  MAX
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
       <div className="flex items-center">
         <input

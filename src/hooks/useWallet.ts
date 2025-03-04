@@ -16,6 +16,29 @@ export function useWallet() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 初始化 provider 和 signer
+  useEffect(() => {
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      
+      // 检查是否已连接
+      window.ethereum.request({ method: 'eth_accounts' })
+        .then((accounts: string[]) => {
+          if (accounts.length > 0) {
+            const signer = provider.getSigner();
+            setWalletState({
+              connected: true,
+              address: accounts[0],
+              chainId: null,
+              provider,
+              signer,
+            });
+          }
+        })
+        .catch(console.error);
+    }
+  }, []);
+
   const connectWallet = useCallback(async () => {
     if (!window.ethereum) {
       setError("MetaMask is not installed. Please install MetaMask to continue.");
@@ -28,25 +51,30 @@ export function useWallet() {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       
-      // Request account access
+      // 请求用户连接钱包
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      
+      if (accounts.length === 0) {
+        throw new Error("No accounts found. Please connect to MetaMask.");
+      }
+      
       const address = accounts[0];
+      const signer = provider.getSigner();
       
-      // Get the connected chain ID
-      const { chainId } = await provider.getNetwork();
+      // 检查当前网络
+      const network = await provider.getNetwork();
+      const chainId = network.chainId;
       
-      // Check if we're on the configured network
+      // 如果不是目标网络，请求切换
       if (chainId !== CURRENT_NETWORK_ID) {
         try {
-          // Try to switch to the configured network
           await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: ethers.utils.hexValue(CURRENT_NETWORK_ID) }],
+            params: [{ chainId: NETWORK_CONFIG[CURRENT_NETWORK_ID].chainId }],
           });
         } catch (switchError: any) {
-          // This error code indicates that the chain has not been added to MetaMask
+          // 如果网络不存在，添加网络
           if (switchError.code === 4902) {
-            // Add the network to MetaMask
             await window.ethereum.request({
               method: 'wallet_addEthereumChain',
               params: [NETWORK_CONFIG[CURRENT_NETWORK_ID]],
@@ -56,8 +84,6 @@ export function useWallet() {
           }
         }
       }
-
-      const signer = provider.getSigner();
       
       setWalletState({
         connected: true,
@@ -67,7 +93,7 @@ export function useWallet() {
         signer,
       });
     } catch (err: any) {
-      console.error("Error connecting wallet:", err);
+      console.error("Wallet connection error:", err);
       setError(err.message || "Failed to connect wallet");
     } finally {
       setIsLoading(false);
@@ -78,36 +104,48 @@ export function useWallet() {
     setWalletState(initialState);
   }, []);
 
-  // Listen for account changes
+  // 监听账户变化
   useEffect(() => {
     if (window.ethereum) {
       const handleAccountsChanged = (accounts: string[]) => {
         if (accounts.length === 0) {
-          // User disconnected their wallet
-          disconnectWallet();
+          // 用户断开了连接
+          setWalletState(initialState);
         } else if (walletState.connected) {
-          // User switched accounts
-          setWalletState(prev => ({
-            ...prev,
+          // 用户切换了账户
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          setWalletState({
+            ...walletState,
             address: accounts[0],
-          }));
+            provider,
+            signer: provider.getSigner(),
+          });
         }
       };
 
-      const handleChainChanged = (chainIdHex: string) => {
-        // Handle chain changes - reload the page as recommended by MetaMask
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      
+      return () => {
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+      };
+    }
+  }, [walletState]);
+
+  // 监听网络变化
+  useEffect(() => {
+    if (window.ethereum) {
+      const handleChainChanged = (chainId: string) => {
+        // 网络变化时刷新页面
         window.location.reload();
       };
 
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
       window.ethereum.on('chainChanged', handleChainChanged);
-
+      
       return () => {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
         window.ethereum.removeListener('chainChanged', handleChainChanged);
       };
     }
-  }, [disconnectWallet, walletState.connected]);
+  }, []);
 
   return {
     ...walletState,
