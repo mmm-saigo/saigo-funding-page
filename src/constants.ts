@@ -26,7 +26,7 @@ export const NETWORK_CONFIG = {
   },
   [BNB_TESTNET_CHAIN_ID]: {
     chainId: ethers.utils.hexValue(BNB_TESTNET_CHAIN_ID),
-    chainName: 'BSC Testnet',
+    chainName: 'Binance Smart Chain Testnet',
     nativeCurrency: {
       name: 'tBNB',
       symbol: 'tBNB',
@@ -58,7 +58,7 @@ export const TOKENS: Record<string, TokenInfo> = {
     name: "SAIGO Token",
     decimals: 18,
     address: SAIGO_CONTRACT_ADDRESS,
-    logoUrl: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80",
+    logoUrl: "https://raw.githubusercontent.com/mmm-saigo/picture/refs/heads/main/logo.png",
   }
 };
 
