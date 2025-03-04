@@ -22,7 +22,9 @@ function App() {
     address,
     isLoading,
     error,
+    isMobile,
     connectWallet,
+    connectOKXWallet,
     disconnectWallet,
   } = walletState;
 
@@ -33,6 +35,12 @@ function App() {
       : "Binance Smart Chain Testnet";
   };
   
+  const getNetworkShortName = () => {
+    return CURRENT_NETWORK_ID === BNB_CHAIN_ID 
+      ? "" 
+      : "Testnet";
+  };
+
   // 获取当前网络的原生代币符号
   const nativeCurrency = getCurrentNetworkCurrency();
 
@@ -46,14 +54,16 @@ function App() {
         </div>
         <div className="flex items-center">
           <span className="text-sm text-gray-600 mr-4">
-            Network: {getNetworkName()}
+            {getNetworkShortName()}
           </span>
           <WalletButton
             connected={connected}
             address={address}
             isLoading={isLoading}
             onConnect={connectWallet}
+            onConnectOKX={connectOKXWallet}
             onDisconnect={disconnectWallet}
+            isMobile={isMobile}
           />
         </div>
       </header>
