@@ -1,6 +1,5 @@
 # SAIGO Token Exchange Platform
 
-![SAIGO](https://images.unsplash.com/photo-1621416894569-0f39ed31d247?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80)
 
 ## Overview
 
