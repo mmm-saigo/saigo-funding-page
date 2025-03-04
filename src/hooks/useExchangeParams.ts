@@ -2,17 +2,21 @@ import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { SWAP_TARGET_CONTRACT_ADDRESS } from '../constants';
 
-// 简化的 ABI，只包含我们需要的函数
+// 简化的 ABI，添加时间相关函数
 const DISTRIBUTOR_ABI = [
   "function exchangeRate() view returns (uint256)",
   "function minBnbAmount() view returns (uint256)",
-  "function maxBnbAmount() view returns (uint256)"
+  "function maxBnbAmount() view returns (uint256)",
+  "function startTimestamp() view returns (uint256)",
+  "function endTimestamp() view returns (uint256)"
 ];
 
 export function useExchangeParams(provider: any) {
   const [exchangeRate, setExchangeRate] = useState<string>('0');
   const [minBnbAmount, setMinBnbAmount] = useState<string>('0');
   const [maxBnbAmount, setMaxBnbAmount] = useState<string>('0');
+  const [startTime, setStartTime] = useState<number>(0);
+  const [endTime, setEndTime] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,6 +49,14 @@ export function useExchangeParams(provider: any) {
       const maxAmountWei = await contract.maxBnbAmount();
       const formattedMaxAmount = ethers.utils.formatEther(maxAmountWei);
       setMaxBnbAmount(formattedMaxAmount);
+
+      // 获取开始时间
+      const startTimestamp = await contract.startTimestamp();
+      setStartTime(startTimestamp.toNumber());
+
+      // 获取结束时间
+      const endTimestamp = await contract.endTimestamp();
+      setEndTime(endTimestamp.toNumber());
     } catch (err: any) {
       console.error("Error fetching exchange parameters:", err);
       setError(err.message || "Failed to fetch exchange parameters");
@@ -62,7 +74,9 @@ export function useExchangeParams(provider: any) {
   return { 
     exchangeRate, 
     minBnbAmount, 
-    maxBnbAmount, 
+    maxBnbAmount,
+    startTime,
+    endTime,
     isLoading, 
     error, 
     refetch: fetchParams 

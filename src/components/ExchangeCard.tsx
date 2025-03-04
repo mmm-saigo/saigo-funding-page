@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { ArrowDown, RefreshCw, AlertCircle } from 'lucide-react';
+import { ArrowDown, RefreshCw, AlertCircle, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from 'react-toastify';
 import TokenInput from './TokenInput';
 import { TokenInfo, WalletState } from '../types';
@@ -43,7 +43,9 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
   const { 
     exchangeRate, 
     minBnbAmount, 
-    maxBnbAmount, 
+    maxBnbAmount,
+    startTime,
+    endTime, 
     isLoading: paramsLoading, 
     error: paramsError 
   } = useExchangeParams(walletState.provider);
@@ -70,9 +72,54 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
     }
   }, [walletState.connected, walletState.provider, refetchBnbBalance, refetchSaigoBalance]);
 
+  // 检查当前时间是否在允许的交易时间范围内
+  const getCurrentTimeStatus = () => {
+    const now = Math.floor(Date.now() / 1000); // 当前时间戳（秒）
+    
+    if (startTime > 0 && now < startTime) {
+      return {
+        canSwap: false,
+        status: 'not-started',
+        message: `Exchange has not started yet. Starts at ${formatDate(startTime)}`
+      };
+    }
+    
+    if (endTime > 0 && now > endTime) {
+      return {
+        canSwap: false,
+        status: 'ended',
+        message: `Exchange has ended at ${formatDate(endTime)}`
+      };
+    }
+    
+    return {
+      canSwap: true,
+      status: 'active',
+      message: startTime > 0 && endTime > 0 
+        ? `Exchange is active until ${formatDate(endTime)}`
+        : 'Exchange is active'
+    };
+  };
+
+  // 格式化时间戳为可读日期
+  const formatDate = (timestamp: number) => {
+    if (timestamp === 0) return 'No limit';
+    
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleString();
+  };
+
+  const timeStatus = getCurrentTimeStatus();
+
   const handleSwap = async () => {
     if (!walletState.connected || !walletState.signer || !fromAmount) {
       toast.error("Please connect your wallet and enter an amount");
+      return;
+    }
+
+    // 检查是否在允许的交易时间范围内
+    if (!timeStatus.canSwap) {
+      toast.error(timeStatus.message);
       return;
     }
 
@@ -155,6 +202,26 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
     <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-5 rounded-2xl shadow-lg max-w-md w-full">
       <h2 className="text-xl font-bold text-center mb-4 text-gray-800">Exchange {nativeCurrency} for SAIGO</h2>
       
+      {/* 显示时间状态 */}
+      {!paramsLoading && !paramsError && (
+        <div className={`mb-4 p-3 rounded flex items-center ${
+          timeStatus.status === 'active' 
+            ? 'bg-green-50 text-green-700 border border-green-200' 
+            : timeStatus.status === 'not-started'
+              ? 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+              : 'bg-red-50 text-red-700 border border-red-200'
+        }`}>
+          {timeStatus.status === 'active' ? (
+            <CheckCircle size={16} className="mr-2 text-green-500" />
+          ) : timeStatus.status === 'not-started' ? (
+            <Clock size={16} className="mr-2 text-yellow-500" />
+          ) : (
+            <XCircle size={16} className="mr-2 text-red-500" />
+          )}
+          <span className="text-sm">{timeStatus.message}</span>
+        </div>
+      )}
+      
       {paramsError && (
         <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4 rounded">
           <div className="flex items-center">
@@ -210,12 +277,12 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
       
       <button
         className={`w-full py-2.5 px-4 rounded-xl font-semibold text-white ${
-          !walletState.connected || isSwapping || paramsLoading
+          !walletState.connected || isSwapping || paramsLoading || !timeStatus.canSwap
             ? 'bg-gray-400 cursor-not-allowed'
             : 'bg-blue-600 hover:bg-blue-700'
         }`}
         onClick={handleSwap}
-        disabled={!walletState.connected || isSwapping || !fromAmount || paramsLoading}
+        disabled={!walletState.connected || isSwapping || !fromAmount || paramsLoading || !timeStatus.canSwap}
       >
         {isSwapping ? (
           <div className="flex items-center justify-center">
@@ -224,6 +291,8 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
           </div>
         ) : paramsLoading ? (
           "Loading parameters..."
+        ) : !timeStatus.canSwap ? (
+          timeStatus.status === 'not-started' ? "Exchange not started yet" : "Exchange has ended"
         ) : !walletState.connected ? (
           "Connect Wallet to Swap"
         ) : !fromAmount ? (
@@ -232,6 +301,18 @@ const ExchangeCard: React.FC<ExchangeCardProps> = ({ walletState }) => {
           `Swap ${nativeCurrency} for SAIGO`
         )}
       </button>
+      
+      {/* 显示时间信息 */}
+      {!paramsLoading && !paramsError && (startTime > 0 || endTime > 0) && (
+        <div className="mt-3 text-xs text-gray-500 text-center">
+          {startTime > 0 && (
+            <div>Start: {formatDate(startTime)}</div>
+          )}
+          {endTime > 0 && (
+            <div>End: {formatDate(endTime)}</div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

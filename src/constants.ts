@@ -38,7 +38,7 @@ export const NETWORK_CONFIG = {
 };
 
 export const SAIGO_CONTRACT_ADDRESS = "0x0f09114b5933db0aa7e303910c220390df1918ee";
-export const SWAP_TARGET_CONTRACT_ADDRESS = "0x916B24bdE831197cD229714Fcac744e5c98c7BFD";
+export const SWAP_TARGET_CONTRACT_ADDRESS = "0x5290Ff33bA88FC941aec6CA3b3f5c35A4Bbba35f";//新合约 带时间戳
 
 // 获取当前网络的原生代币符号
 export const getCurrentNetworkCurrency = () => {
