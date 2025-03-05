@@ -57,7 +57,7 @@ const WalletButton: React.FC<WalletButtonProps> = ({
           <span>Connecting...</span>
         ) : (
           <>
-            <img src="https://static.okx.com/cdn/assets/imgs/223/C5503A9FD659BFDE.png" alt="OKX Wallet" className="w-5 h-5 mr-2" />
+            <img src="https://pic-saigo.saigo.dev/wallet.png" alt="OKX Wallet" className="w-5 h-5 mr-2" />
             <span>Connect OKX</span>
           </>
         )}
