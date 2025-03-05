@@ -102,7 +102,7 @@ function App() {
                 <li>Users who participate in the exchange with an amount of 0.000303 {nativeCurrency} for the first time will share 1% of the fundraising incentives after the fundraising is successful.</li>
                 <li>If KOLs and media initiate discussions or share relevant content, they will share 1% of the fundraising incentives based on the popularity of the discussions after the fundraising is successful. <a href="https://docs.google.com/forms/d/e/1FAIpQLSfj0uTSY2mx6JPEpfyE3uKa8ONGbDLYBAiD5MajbIWUeKzPyw/viewform?entry.2005620554=Your+name+on+the+social+platform.&entry.1045781291=xxxxxxxx@xx.com&entry.1065046570=0x*****************************" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">KOL submission entry</a></li>
                 <li>Users from regions where the project is restricted by policies and regulations are not allowed to participate.</li>
-                <li>By participating, you agree to the <span className="text-blue-600 cursor-pointer">Terms and Conditions</span></li>
+                <li>By participating, you agree to the  <a href="https://pic-saigo.saigo.dev/terms.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Terms and Conditions</a></li>
               </ul>
             </div>
             
