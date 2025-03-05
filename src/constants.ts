@@ -58,7 +58,7 @@ export const TOKENS: Record<string, TokenInfo> = {
     name: "SAIGO",
     decimals: 18,
     address: SAIGO_CONTRACT_ADDRESS,
-    logoUrl: "https://raw.githubusercontent.com/mmm-saigo/picture/refs/heads/main/logo.png",
+    logoUrl: "https://pic-saigo.saigo.dev/logo.png",
   }
 };
 
